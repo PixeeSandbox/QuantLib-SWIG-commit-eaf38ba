@@ -1,0 +1,26 @@
+# Added by Pixee for C/C++ triage benchmarks (ISS-9982). Runs only on manual dispatch.
+name: Sonar scan
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: https://sonarcloud.io
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: mkdir -p empty-java-binaries
+      - uses: SonarSource/sonarqube-scan-action@v8.4.1
+        with:
+          args: >
+            -Dsonar.organization=pixee-sandbox
+            -Dsonar.projectKey=PixeeSandbox_QuantLib-SWIG-commit-eaf38ba
+            -Dsonar.sources=.
+            -Dsonar.exclusions=.github/**,empty-java-binaries/**
+            -Dsonar.java.binaries=empty-java-binaries
